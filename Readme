@@ -1,0 +1,143 @@
+# NER-Disambiguation-PromptSet (NDPS-200)
+
+NDPS-200 adalah dataset berisi 200 prompt ambigu yang dirancang untuk mengevaluasi
+framework **NER-Enriched Prompting** pada sistem Generative AI (LLM).
+
+Dataset ini digunakan dalam paper:
+
+> *"From Entities to Insights: Leveraging NER to Improve Prompt Relevance in Generative AI Systems"*
+
+## 1. Tujuan Dataset
+
+Dataset ini berfokus pada **ambiguitas semantik** yang sering terjadi dalam prompt pengguna,
+terutama pada:
+
+- Polisemi / Homonim (mis. *Java*, *Apple*, *Python*)
+- Ambiguitas Lokasi (mis. *Malang*, *Paris*)
+- Nama Orang vs Istilah Umum (mis. *Sari*, *Budi*)
+
+Setiap prompt dilengkapi dengan:
+
+- entitas target,
+- label tipe entitas,
+- prompt reformulasi berbasis NER,
+- dan jawaban referensi (reference answer).
+
+Hal ini memungkinkan evaluasi:
+
+- baseline LLM,
+- pipeline NER → Prompt Reformulation → LLM,
+- serta *ablation study*.
+
+## 2. Struktur File
+
+File utama:
+
+- `NDPS-200.csv`
+
+Kolom-kolom di dalamnya:
+
+- **id**  
+  ID unik instance (NDPS001 … NDPS200)
+
+- **category**  
+  Kategori ambiguitas:  
+  - `P/H` – Polisemi / Homonim  
+  - `LOC-US` – Ambiguitas lokasi (beberapa kota bernama sama)  
+  - `PER-GEN` – Nama orang vs kata umum
+
+- **prompt_text**  
+  Prompt asli seperti yang mungkin diketik pengguna (ambigu).
+
+- **target_entity**  
+  Entitas kunci yang ambigu, misalnya: `Apple`, `Java`, `Malang`, `Sari`.
+
+- **target_entity_type**  
+  Label makna yang diinginkan, misalnya:  
+  - `ORG` (organisasi/perusahaan)  
+  - `FRUIT` (buah)  
+  - `CITY_ID` (kota di Indonesia)  
+  - `CITY_FR` (kota di Prancis)  
+  - `PERSON` (nama orang)  
+  - dst.
+
+- **intended_meaning_description**  
+  Penjelasan singkat makna yang dimaksud.  
+  Contoh: `"Perusahaan teknologi"`, `"Kota di Jawa Timur, Indonesia"`.
+
+- **reformulated_prompt**  
+  Versi prompt yang sudah diperkaya oleh NER:  
+  prompt internal yang akan dikirim ke LLM, dengan konteks eksplisit.  
+  Contoh:  
+  > `"Berikan berita teknologi terbaru tentang Apple Inc."`  
+  > `"Berikan informasi umum tentang Kota Malang di Jawa Timur, Indonesia."`
+
+- **reference_answer**  
+  Jawaban referensi singkat yang dianggap benar/relevan untuk evaluasi HRS / BERTScore.
+
+- **language**  
+  Kode bahasa, seluruh instance saat ini `id-ID`.
+
+## 3. Cakupan Kategori
+
+Total 200 instance terdiri dari:
+
+- **70** instance polisemi/homonim (`P/H`)
+- **70** instance ambiguitas lokasi (`LOC-US`)
+- **60** instance nama orang vs istilah umum (`PER-GEN`)
+
+Prompt ditulis dalam **bahasa Indonesia**, dengan entitas yang
+sebagian besar relevan untuk konteks pengguna di Indonesia.
+
+## 4. Cara Menggunakan
+
+Beberapa skenario penggunaan:
+
+### 4.1 Evaluasi Baseline LLM
+
+1. Ambil kolom `prompt_text`.
+2. Kirim langsung ke LLM (misal GPT-3.5, GPT-4, dll).
+3. Simpan respons model sebagai `baseline_response`.
+4. Bandingkan dengan `reference_answer`:
+   - menggunakan *Human Relevance Score (HRS)*, atau
+   - metrik otomatis seperti BERTScore-F1 / BLEU / ROUGE.
+
+### 4.2 Evaluasi NER-Enriched Prompting
+
+1. Jalankan NER di atas `prompt_text`.
+2. Gunakan hasil NER untuk memutuskan tipe entitas (`target_entity_type`) dan konteks.
+3. Bangun `reformulated_prompt` (bisa mengikuti kolom yang sudah ada, atau generate sendiri).
+4. Kirim `reformulated_prompt` ke LLM.
+5. Evaluasi respons vs `reference_answer`.
+6. Bandingkan skor dengan baseline.
+
+### 4.3 Ablation Study
+
+Beberapa setup yang bisa diulang:
+
+- **Baseline**: prompt asli → LLM  
+- **Reformulation Only**: gunakan `reformulated_prompt` tanpa NER otomatis  
+- **NER Only**: gunakan NER untuk highlight entitas tetapi tanpa perubahan struktur prompt  
+- **Full Pipeline**: NER → Reformulation → LLM
+
+### 4.4 Penelitian Lanjutan
+
+Dataset bisa digunakan untuk:
+
+- penelitian *entity disambiguation* pada LLM,  
+- studi *prompt engineering* untuk kasus ambigu,  
+- evaluasi sistem dialog yang sensitif konteks,  
+- eksperimen *few-shot* / *in-context learning* untuk disambiguasi.
+
+## 5. Lisensi
+
+Dataset ini dirilis di bawah lisensi **MIT License** (lihat file `LICENSE`).
+
+Silakan gunakan, modifikasi, dan distribusikan kembali dengan tetap mencantumkan atribusi.
+
+## 6. Sitasi
+
+Jika menggunakan NDPS-200 dalam publikasi ilmiah, mohon sitasi seperti berikut:
+
+> Sulistyo, D.A (2025).  
+> **NER-Disambiguation-PromptSet (NDPS-200)**: A Prompt Dataset for Evaluating NER-Enriched Disambiguation in Generative AI Systems.  
