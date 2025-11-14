@@ -1,0 +1,29 @@
+👉 NDPS-200.csv
+
+Isi kolom:
+
+id – ID unik (NDPS001 … NDPS200)
+
+category – P/H, LOC-US, PER-GEN
+
+prompt_text – prompt ambigu versi user
+
+target_entity – entitas utama ambigu (Apple, Java, Malang, Sari, dll.)
+
+target_entity_type – label makna yang diinginkan (ORG, FRUIT, CITY_ID, PERSON, dll.)
+
+intended_meaning_description – deskripsi singkat maksud sebenarnya
+
+reformulated_prompt – versi prompt yang sudah diperkaya NER (internal prompt)
+
+reference_answer – jawaban ideal / referensi singkat
+
+language – id-ID
+
+Jumlah total: 200 baris
+
+70 kategori P/H
+
+70 kategori LOC-US
+
+60 kategori PER-GEN
